@@ -48,7 +48,7 @@ pipeline {
         }
         stage("Docker build") {
             steps {
-                sh "docker build -t danielgara/laravel8cdpart2 --no-cache ."
+                sh "docker build -t vrpawar86/laravel8cdpart2 --no-cache ."
             }
         }
         stage("Docker push") {
