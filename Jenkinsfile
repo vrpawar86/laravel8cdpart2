@@ -63,9 +63,10 @@ pipeline {
         }
         stage("Deploy to staging") {
             steps {
-                sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
-                sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                sh "ssh-agent sh -c 'ssh-add /etc/ansible/pem/key.pem && ansible-playbook /etc/ansible/playbook/playbook-staging-run.yml'"
+                def dockerrun = 'ansible-playbook /etc/ansible/playbook/playbook-staging-run.yml'
+              sshagent(['staging']) {
+                    // some block
+                  sh "ssh -o StrictHostKeyChecking=no ec2-user@20.0.1.57 ${dockerrun}"
             }
         }
         stage("Acceptance test curl") {
