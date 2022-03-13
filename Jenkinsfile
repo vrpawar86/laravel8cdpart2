@@ -1,9 +1,8 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCESS_KEY_ID = credentials("aws-access-key-id")
-        AWS_SECRET_ACCESS_KEY = credentials("aws-secret-access-key")
-        AWS_SESSION_TOKEN = credentials("aws-session-token")
+        AWS_ACCESS_KEY_ID = ("AKIAYRCOPKCSAJVN4GQB")
+        AWS_SECRET_ACCESS_KEY = ("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")
     }
     stages {
         stage("Build") {
@@ -49,25 +48,23 @@ pipeline {
         }
         stage("Docker build") {
             steps {
-                sh "docker rmi danielgara/laravel8cdpart2"
                 sh "docker build -t danielgara/laravel8cdpart2 --no-cache ."
             }
         }
         stage("Docker push") {
             environment {
-                DOCKER_USERNAME = credentials("docker-user")
-                DOCKER_PASSWORD = credentials("docker-password")
+                DOCKER_USERNAME = ("vrpawar86")
+                DOCKER_PASSWORD = ("1211122111Vi")
             }
             steps {
                 sh "docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}"
-                sh "docker push danielgara/laravel8cdpart2"
+                sh "docker push vrpawar86/laravel8cdpart2"
             }
         }
         stage("Deploy to staging") {
             steps {
                 sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
                 sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                sh "export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
                 sh "ssh-agent sh -c 'ssh-add /etc/ansible/pem/key.pem && ansible-playbook /etc/ansible/playbook/playbook-staging-run.yml'"
             }
         }
@@ -81,14 +78,12 @@ pipeline {
             steps {
                 sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
                 sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                sh "export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
                 sh "ssh-agent sh -c 'ssh-add /etc/ansible/pem/key.pem && ansible-playbook /etc/ansible/playbook/playbook-staging-acceptance.yml'"
             }
             post {
                 always {
                     sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
                     sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                    sh "export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
                     sh "ssh-agent sh -c 'ssh-add /etc/ansible/pem/key.pem && ansible-playbook /etc/ansible/playbook/playbook-staging-stop.yml'"
                 }
             }
@@ -97,7 +92,6 @@ pipeline {
             steps {
                 sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
                 sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                sh "export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
                 sh "ssh-agent sh -c 'ssh-add /etc/ansible/pem/key.pem && ansible-playbook /etc/ansible/playbook/playbook-production-run.yml'"
             }
         }
@@ -106,7 +100,6 @@ pipeline {
                 sleep 20
                 sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
                 sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                sh "export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
                 sh "ssh-agent sh -c 'ssh-add /etc/ansible/pem/key.pem && ansible-playbook /etc/ansible/playbook/playbook-production-acceptance.yml'"
             }
         }
