@@ -63,10 +63,9 @@ pipeline {
         }
         stage("Deploy to staging") {
             steps {
-                def dockerrun = 'ansible-playbook /etc/ansible/playbook/playbook-staging-run.yml'
               sshagent(['staging']) {
                     // some block
-                  sh "ssh -o StrictHostKeyChecking=no ec2-user@20.0.1.57 ${dockerrun}"
+                  sh "ssh -o StrictHostKeyChecking=no ec2-user@20.0.1.57 ansible-playbook /etc/ansible/playbook/playbook-staging-run.yml"
             }
         }
         stage("Acceptance test curl") {
